@@ -32,28 +32,38 @@ def VISION(filename):
     image_data = ToBase64(filename)
     print(filename + "")
 
+    #api_type = "LABEL_DETECTION"    #label
+    api_type = "TEXT_DETECTION"    #ORC
+
     data = "{\"requests\":[{\"image\":{\"content\":\"" + image_data + \
-        "\"},\"features\":[{\"type\":\"LABEL_DETECTION\",\"maxResults\":5}]}]}"
+        "\"},\"features\":[{\"type\":\"" + api_type +"\",\"maxResults\":5}]}]}"
+
+    
 
     headers = {'content-type': 'application/json'}
 
     r = requests.post(
         'https://vision.googleapis.com/v1/images:annotate?key='+api_key, data=data, headers=headers)
 
-    # print(r.text)
+    print(r.text)
+
     r_list = eval(r.text)
 
-    result_list = r_list["responses"][0]["labelAnnotations"]
-    #print(result_list)
-    for result in result_list:
-        print("    " + result["description"])
+    if api_type == "LABEL_DETECTION" :
+        result_list = r_list["responses"][0]["labelAnnotations"]
+        #print(result_list)
+        for result in result_list:
+            print("    " + result["description"])
     
+    if api_type == "TEXT_DETECTION" :
+        result = r_list["responses"][0]["textAnnotations"][0]["description"]
+        print(result)
 
 
 if __name__ == '__main__':
     """
-    for filename in get_file_name("./pic/"):
+    for filename in get_file_name(".pic/"):
         VISION(filename)
     """
-    VISION("./pic/casio.jpg")
+    VISION("./Example/test.jpg")
     # print(__name__)
